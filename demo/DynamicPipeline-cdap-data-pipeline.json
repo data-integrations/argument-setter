@@ -1,0 +1,213 @@
+{
+    "name": "DynamicPipeline",
+    "artifact": {
+        "name": "cdap-data-pipeline",
+        "version": "4.2.0",
+        "scope": "SYSTEM"
+    },
+    "description": "This is dynamic pipeline",
+    "config": {
+        "batchInterval": "10s",
+        "resources": {
+            "memoryMB": 1024,
+            "virtualCores": 1
+        },
+        "driverResources": {
+            "memoryMB": 1024,
+            "virtualCores": 1
+        },
+        "clientResources": {
+            "virtualCores": 1,
+            "memoryMB": 1024
+        },
+        "schedule": "0 * * * *",
+        "connections": [
+            {
+                "from": "File",
+                "to": "File Parser"
+            },
+            {
+                "from": "File Parser",
+                "to": "Data Quality Checks"
+            },
+            {
+                "from": "Data Quality Checks",
+                "to": "Stage Feed"
+            },
+            {
+                "from": "ArgumentSetter",
+                "to": "File"
+            }
+        ],
+        "comments": [],
+        "postActions": [],
+        "engine": "mapreduce",
+        "stages": [
+            {
+                "name": "File",
+                "plugin": {
+                    "name": "File",
+                    "type": "batchsource",
+                    "label": "File",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "1.7.0",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"offset\",\"type\":\"long\"},{\"name\":\"body\",\"type\":[\"string\",\"null\"]},{\"name\":\"filename\",\"type\":[\"string\",\"null\"]}]}",
+                        "recursive": "false",
+                        "filenameOnly": "true",
+                        "ignoreNonExistingFolders": "false",
+                        "referenceName": "InputFeed",
+                        "path": "${input.path}",
+                        "pathField": "filename"
+                    }
+                },
+                "outputSchema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"offset\",\"type\":\"long\"},{\"name\":\"body\",\"type\":[\"string\",\"null\"]},{\"name\":\"filename\",\"type\":[\"string\",\"null\"]}]}",
+                "type": "batchsource",
+                "label": "File",
+                "icon": "icon-file",
+                "_uiPosition": {
+                    "top": "326px",
+                    "left": "534.5px"
+                },
+                "$$hashKey": "object:846"
+            },
+            {
+                "name": "File Parser",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "File Parser",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "2.0.0",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1",
+                        "schema": "${output.schema}",
+                        "directives": "${parser}"
+                    }
+                },
+                "outputSchema": "${output.schema}",
+                "inputSchema": [
+                    {
+                        "name": "File",
+                        "schema": "{\"type\":\"record\",\"name\":\"etlSchemaBody\",\"fields\":[{\"name\":\"offset\",\"type\":\"long\"},{\"name\":\"body\",\"type\":[\"string\",\"null\"]},{\"name\":\"filename\",\"type\":[\"string\",\"null\"]}]}"
+                    }
+                ],
+                "type": "transform",
+                "label": "File Parser",
+                "icon": "icon-DataPreparation",
+                "_uiPosition": {
+                    "top": "326px",
+                    "left": "834.5px"
+                },
+                "$$hashKey": "object:847"
+            },
+            {
+                "name": "Data Quality Checks",
+                "plugin": {
+                    "name": "Wrangler",
+                    "type": "transform",
+                    "label": "Data Quality Checks",
+                    "artifact": {
+                        "name": "wrangler-transform",
+                        "version": "2.0.0",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "field": "*",
+                        "precondition": "false",
+                        "threshold": "1",
+                        "schema": "${output.schema}",
+                        "directives": "${dq.checks}"
+                    }
+                },
+                "outputSchema": "${output.schema}",
+                "inputSchema": [
+                    {
+                        "name": "File Parser",
+                        "schema": ""
+                    }
+                ],
+                "type": "transform",
+                "label": "Data Quality Checks",
+                "icon": "icon-DataPreparation",
+                "_uiPosition": {
+                    "top": "326px",
+                    "left": "1134.5px"
+                },
+                "$$hashKey": "object:848"
+            },
+            {
+                "name": "Stage Feed",
+                "plugin": {
+                    "name": "TPFSAvro",
+                    "type": "batchsink",
+                    "label": "Stage Feed",
+                    "artifact": {
+                        "name": "core-plugins",
+                        "version": "1.7.0",
+                        "scope": "SYSTEM"
+                    },
+                    "properties": {
+                        "compressionCodec": "None",
+                        "schema": "${output.schema}",
+                        "name": "${stage.path}"
+                    }
+                },
+                "outputSchema": "${output.schema}",
+                "inputSchema": [
+                    {
+                        "name": "Data Quality Checks",
+                        "schema": ""
+                    }
+                ],
+                "type": "batchsink",
+                "label": "Stage Feed",
+                "icon": "icon-tpfsavro",
+                "_uiPosition": {
+                    "top": "326px",
+                    "left": "1434.5px"
+                },
+                "$$hashKey": "object:849"
+            },
+            {
+                "name": "ArgumentSetter",
+                "plugin": {
+                    "name": "ArgumentSetter",
+                    "type": "action",
+                    "label": "ArgumentSetter",
+                    "artifact": {
+                        "name": "argument-setter-plugins",
+                        "version": "1.0.0-SNAPSHOT",
+                        "scope": "USER"
+                    },
+                    "properties": {
+                        "method": "GET",
+                        "followRedirects": "true",
+                        "url": "http://localhost:8000/${id}"
+                    }
+                },
+                "outputSchema": "",
+                "type": "action",
+                "label": "ArgumentSetter",
+                "icon": "fa-plug",
+                "_uiPosition": {
+                    "top": "326px",
+                    "left": "234.5px"
+                },
+                "$$hashKey": "object:850"
+            }
+        ],
+        "properties": {},
+        "processTimingEnabled": true,
+        "stageLoggingEnabled": true,
+        "maxConcurrentRuns": 1
+    }
+}
