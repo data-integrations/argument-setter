@@ -1,34 +1,57 @@
-Build
------
-To build your plugins:
+# Argument Setter
 
-    mvn clean package -DskipTests
+Argument Setter is a type of Action plugin that allows one to create reusable pipelines by dynamically substituting the configurations that can be served by an HTTP Server. It uses the Macro capabilities provided by CDAP. 
 
-The build will create a .jar and .json file under the ``target`` directory.
-These files can be used to deploy your plugins.
+## Usage
 
-UI Integration
---------------
-The CDAP UI displays each plugin property as a simple textbox. To customize how the plugin properties
-are displayed in the UI, you can place a configuration file in the ``widgets`` directory.
-The file must be named following a convention of ``[plugin-name]-[plugin-type].json``.
+Following is a simple example of a configuration that can be served by HTTP server to this plugin. 
 
-See [Plugin Widget Configuration](http://docs.cdap.io/cdap/current/en/hydrator-manual/developing-plugins/packaging-plugins.html#plugin-widget-json)
-for details on the configuration file.
+```
+{
+  "arguments" : [
+    { "name" : "input.path", "type" : "string", "value" : "/Users/nitin/Work/Demo/data/titanic.xlsx" },
+    { "name" : "parser", "type" : "array", "value" :
+      [
+        "parse-as-excel body , true",
+        "drop body",
+        "set columns PassengerId,Survived,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked",
+        "filter-row-if-matched Age Age"
+        "cut-character Sex Sex 1",
+        "uppercase Sex",
+        "rename Sex Gender",
+        "keep PassengerId, Name",
+        "fill-null-or-empty Age 0"
+      ]
+    },
+    {
+      "name" : "output.schema", "type" : "schema", "value" :
+      [
+        { "name" : "PassengerId", "type" : "string", "nullable" : true},
+        { "name" : "Name", "type" : "string", "nullable" : true}
+      ]
+    },
+    { "name" : "dq.checks", "type" : "array", "value" :
+      [
+        "filter-rows-on regex-match Name .*James.*"
+      ]
+    },
+    { "name" : "stage.path", "type" : "string", "value" : "titanic_excel"}
+  ]
+}
+```
 
-The UI will also display a reference doc for your plugin if you place a file in the ``docs`` directory
-that follows the convention of ``[plugin-name]-[plugin-type].md``.
+The configuration is made up of collection of `Arguments` and `Arguments` defines all the configurations for one or more pipelines qualified by macro names.
 
-When the build runs, it will scan the ``widgets`` and ``docs`` directories in order to build an appropriately
-formatted .json file under the ``target`` directory. This file is deployed along with your .jar file to add your
-plugins to CDAP.
+```
+{
+    "arguments" : [
+        { argument }, { argument }, ..., {argument}
+    ]
+}
+```
 
-Deployment
-----------
-You can deploy your plugins using the CDAP CLI:
+Each `argument` is made up of following fields
 
-    > load artifact <target/plugin.jar> config-file <target/plugin.json>
-
-For example, if your artifact is named 'my-plugins-1.0.0':
-
-    > load artifact target/my-plugins-1.0.0.jar config-file target/my-plugins-1.0.0.json
+* **Name** -- Defines the name of the argument or macro name. 
+* **Type** -- Defines the type of argument. It can be either int, float, double, short, string, schema, char, array or map. &
+* **Value** -- Defines the value based on the type. 
