@@ -257,7 +257,7 @@
             <Embed-Transitive>true</Embed-Transitive>
             <Embed-Directory>lib</Embed-Directory>
             <!--Only @Plugin classes in the export packages will be included as plugin-->
-            <_exportcontents>co.cask.plugin.argument.*</_exportcontents>
+            <_exportcontents>co.cask.plugin.*</_exportcontents>
           </instructions>
         </configuration>
         <executions>
