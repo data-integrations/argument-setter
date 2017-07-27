@@ -1,11 +1,10 @@
 {
   "arguments" : [
-    { "name" : "input.path", "type" : "string", "value" : "/Users/nitin/Work/Demo/data/titanic.xlsx" },
+    { "name" : "input.path", "type" : "string", "value" : "/Users/nitin/Work/Demo/data/titanic.csv" },
     { "name" : "parser", "type" : "array", "value" : 
       [ 
-        "parse-as-excel body , true",
+        "parse-as-csv body , true",
         "drop body",
-        "set columns PassengerId,Survived,Pclass,Name,Sex,Age,SibSp,Parch,Ticket,Fare,Cabin,Embarked",
         "filter-row-if-matched Age Age",
         "cut-character Sex Sex 1",
         "uppercase Sex",
@@ -26,6 +25,6 @@
         "filter-rows-on regex-match Name .*James.*"
       ]
     },
-    { "name" : "stage.path", "type" : "string", "value" : "titanic_excel"}
+    { "name" : "stage.path", "type" : "string", "value" : "titanic_csv"}
   ]
 }

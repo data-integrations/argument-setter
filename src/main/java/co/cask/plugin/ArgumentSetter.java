@@ -27,6 +27,8 @@ import co.cask.plugin.proto.Argument;
 import co.cask.plugin.proto.Configuration;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -57,6 +59,7 @@ import java.io.IOException;
 @Name("ArgumentSetter")
 @Description("Argument setter for dynamically configuring pipeline.")
 public final class ArgumentSetter extends HTTPArgumentSetter<HTTPConfig> {
+  private static final Logger LOG = LoggerFactory.getLogger(ArgumentSetter.class);
   private static final Gson gson = new Gson();
 
   public ArgumentSetter(HTTPConfig conf) {
@@ -68,7 +71,13 @@ public final class ArgumentSetter extends HTTPArgumentSetter<HTTPConfig> {
     try {
       Configuration configuration = gson.fromJson(body, Configuration.class);
       for (Argument argument : configuration.getArguments()) {
-        context.getArguments().set(argument.getName(), argument.getValue());
+        String name = argument.getName();
+        String value = argument.getValue();
+        if (value != null) {
+          context.getArguments().set(name, value);
+        } else {
+          throw new RuntimeException("Configuration '" + name + "' is null. Cannot set argument to null.");
+        }
       }
     } catch (JsonSyntaxException e) {
       throw new RuntimeException(String.format("Could not parse response from '%s': %s",
