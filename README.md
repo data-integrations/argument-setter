@@ -10,6 +10,7 @@ Following is a simple example of a configuration that can be served by HTTP serv
 {
   "arguments" : [
     { "name" : "input.path", "type" : "string", "value" : "/Users/nitin/Work/Demo/data/titanic.xlsx" },
+    { "name" : "rulebook", "type" : "import", "value" : "http://localhost:11015/v3/namespaces/default/apps/yare/services/service/rulebook/MyRuleBook" },
     { "name" : "parser", "type" : "array", "value" :
       [
         "parse-as-excel body , true",
