@@ -17,10 +17,19 @@
 package co.cask.plugin.proto;
 
 import co.cask.cdap.api.data.schema.Schema;
+import co.cask.common.http.HttpMethod;
+import co.cask.common.http.HttpRequest;
+import co.cask.common.http.HttpRequestConfig;
+import co.cask.common.http.HttpRequests;
+import co.cask.common.http.HttpResponse;
 import com.google.common.base.Joiner;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +38,7 @@ import java.util.Map;
  * Class description here.
  */
 public final class Argument {
+  private static final Logger LOG = LoggerFactory.getLogger(Argument.class);
   private String name;
   private String type;
   private JsonElement value;
@@ -37,12 +47,14 @@ public final class Argument {
     return name;
   }
 
-  public String getType() {
-    return type;
-  }
-
   public String getValue() {
-    if (type.equalsIgnoreCase("schema")) {
+    if (type.equalsIgnoreCase("import")) {
+      try {
+        return importFromURL(value.getAsString());
+      } catch (MalformedURLException e) {
+        return null;
+      }
+    } else if (type.equalsIgnoreCase("schema")) {
       return createSchema(value).toString();
     } else if (type.equalsIgnoreCase("int")) {
       return Integer.toString(value.getAsInt());
@@ -69,7 +81,30 @@ public final class Argument {
       }
       return Joiner.on(",").join(values);
     }
-    return value.getAsString();
+    throw new IllegalArgumentException("Invalid argument type '" + type + "'");
+  }
+
+
+  private String importFromURL(String ref) throws MalformedURLException {
+    HttpMethod method = HttpMethod.GET;
+    URL url = new URL(ref);
+    HttpRequest.Builder requestBuilder = HttpRequest.builder(method, url);
+    HttpRequestConfig config = HttpRequestConfig.DEFAULT;
+    int retries = 0;
+    do {
+      try {
+        HttpResponse response = HttpRequests.execute(requestBuilder.build(), config);
+        int responseCode = response.getResponseCode();
+        if (responseCode / 100 != 2) {
+          throw new IllegalStateException(String.format("Received non-ok response code %d. Response message = %s",
+                                                        responseCode, response.getResponseMessage()));
+        }
+        return response.getResponseBodyAsString();
+      } catch (Exception e) {
+        retries++;
+      }
+    } while (retries < 2);
+    return null;
   }
 
   private Schema createSchema(JsonElement array) {

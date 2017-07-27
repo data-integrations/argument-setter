@@ -55,4 +55,21 @@ Each `argument` is made up of following fields
 
 * **Name** -- Defines the name of the argument or macro name. 
 * **Type** -- Defines the type of argument. It can be either int, float, double, short, string, schema, char, array or map. &
-* **Value** -- Defines the value based on the type. 
+* **Value** -- Defines the value based on the type.
+
+### Argument Types
+
+Following are the argument types supported by the system:
+
+| Argument Type | Type Description |
+| ------------- | ---------------- |
+| import | Defines the type that imports the value using a HTTP invocation |
+| schema | Defines the value to be of schema type that is defined as combination of `name`, `type` and `nullable` |
+| int | Defines the value as integer type |
+| float | Defines the value as float type |
+| double | Defines the value as double type |
+| short | Defines the value as short type |
+| string | Defines the value as string type |
+| char | Defines the value as char type |
+| array | Defines the value as array of string type |
+| map | Defines the value of map |

@@ -82,8 +82,8 @@
                     "label": "File Parser",
                     "artifact": {
                         "name": "wrangler-transform",
-                        "version": "2.0.0",
-                        "scope": "SYSTEM"
+                        "version": "3.0.0-SNAPSHOT",
+                        "scope": "USER"
                     },
                     "properties": {
                         "field": "*",
@@ -117,8 +117,8 @@
                     "label": "Data Quality Checks",
                     "artifact": {
                         "name": "wrangler-transform",
-                        "version": "2.0.0",
-                        "scope": "SYSTEM"
+                        "version": "3.0.0-SNAPSHOT",
+                        "scope": "USER"
                     },
                     "properties": {
                         "field": "*",
