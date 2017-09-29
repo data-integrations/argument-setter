@@ -28,6 +28,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <cdap.version>4.2.0</cdap.version>
+    <hydrator.version>1.7.0</hydrator.version>
     <hadoop.version>2.3.0</hadoop.version>
     <guava.version>13.0.1</guava.version>
     <jsonpath.version>2.2.0</jsonpath.version>
@@ -49,10 +50,26 @@
       <id>sonatype-snapshots</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
     </repository>
+    <repository> <id>mapr-releases</id>
+      <url>http://repository.mapr.com/maven/</url>
+      <snapshots><enabled>false</enabled></snapshots>
+      <releases><enabled>true</enabled></releases>
+    </repository>
   </repositories>
 
   <dependencies>
 
+    <dependency>
+      <groupId>com.mapr.db</groupId>
+      <artifactId>maprdb</artifactId>
+      <version>5.2.0-mapr</version>
+    </dependency>
+
+    <dependency>
+      <groupId>com.mapr.db</groupId>
+      <artifactId>maprdb-mapreduce</artifactId>
+      <version>5.2.0-mapr</version>
+    </dependency>
 
     <dependency>
       <groupId>com.googlecode.json-simple</groupId>
@@ -87,10 +104,20 @@
       <version>${cdap.version}</version>
     </dependency>
     <dependency>
+      <groupId>co.cask.hydrator</groupId>
+      <artifactId>hydrator-common</artifactId>
+      <version>${hydrator.version}</version>
+    </dependency>
+    <dependency>
       <groupId>co.cask.cdap</groupId>
       <artifactId>cdap-data-pipeline</artifactId>
       <version>${cdap.version}</version>
       <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>co.cask.cdap</groupId>
+      <artifactId>cdap-formats</artifactId>
+      <version>${cdap.version}</version>
     </dependency>
     <dependency>
       <groupId>co.cask.cdap</groupId>
@@ -257,7 +284,7 @@
             <Embed-Transitive>true</Embed-Transitive>
             <Embed-Directory>lib</Embed-Directory>
             <!--Only @Plugin classes in the export packages will be included as plugin-->
-            <_exportcontents>co.cask.plugin.*</_exportcontents>
+            <_exportcontents>com.mapr.db.*;org.ojai.*;co.cask.plugin.*</_exportcontents>
           </instructions>
         </configuration>
         <executions>
