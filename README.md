@@ -1,5 +1,10 @@
 # Argument Setter
 
+[![cm-available](https://cdap-users.herokuapp.com/assets/cm-available.svg)](https://docs.cask.co/cdap/current/en/integrations/cask-market.html)
+[![CDAP Action](cdap-users.herokuapp.com/assets/cdap-action.svg)](http://docs.cask.co/cdap)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Join CDAP community](https://cdap-users.herokuapp.com/badge.svg?t=wrangler)](https://cdap-users.herokuapp.com?t=1)
+
 Argument Setter is a type of Action plugin that allows one to create reusable pipelines by dynamically substituting the configurations that can be served by an HTTP Server. It uses the Macro capabilities provided by CDAP. 
 
 ## Usage
