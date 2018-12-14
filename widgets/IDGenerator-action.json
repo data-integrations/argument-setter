@@ -1,0 +1,21 @@
+{
+  "metadata": {
+    "spec-version": "1.4"
+  },
+  "configuration-groups": [
+    {
+      "label": "Basic",
+      "properties": [
+        {
+          "widget-type": "csv",
+          "label": "Arguments",
+          "name": "arguments",
+          "widget-attributes": {
+            "placeholder": "argument name"
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": []
+}
