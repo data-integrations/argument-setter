@@ -14,7 +14,8 @@
  * the License.
  */
 
-package co.cask.plugin.proto;
+package io.cdap.plugin.proto;
+
 
 import java.util.List;
 

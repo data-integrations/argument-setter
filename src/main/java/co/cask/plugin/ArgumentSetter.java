@@ -14,19 +14,19 @@
  * the License.
  */
 
-package co.cask.plugin;
+package io.cdap.plugin;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.etl.api.action.Action;
-import co.cask.cdap.etl.api.action.ActionContext;
-import co.cask.plugin.http.HTTPArgumentSetter;
-import co.cask.plugin.http.HTTPConfig;
-import co.cask.plugin.proto.Argument;
-import co.cask.plugin.proto.Configuration;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Name;
+import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.cdap.etl.api.action.Action;
+import io.cdap.cdap.etl.api.action.ActionContext;
+import io.cdap.plugin.http.HTTPArgumentSetter;
+import io.cdap.plugin.http.HTTPConfig;
+import io.cdap.plugin.proto.Argument;
+import io.cdap.plugin.proto.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
