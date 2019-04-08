@@ -1,7 +1,5 @@
-package co.cask.proto;
+package io.cdap.plugin.proto;
 
-import co.cask.plugin.proto.Argument;
-import co.cask.plugin.proto.Configuration;
 import com.google.gson.Gson;
 import org.junit.Assert;
 import org.junit.Test;
