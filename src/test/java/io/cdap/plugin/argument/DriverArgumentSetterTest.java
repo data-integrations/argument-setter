@@ -1,4 +1,4 @@
-package co.cask.plugin.argument;
+package io.cdap.plugin.argument;
 
 /**
  *
