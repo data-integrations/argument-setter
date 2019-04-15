@@ -1,5 +1,5 @@
 /*
- * Copyright © 2017 Cask Data, Inc.
+ * Copyright © 2017-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,11 +14,11 @@
  * the License.
  */
 
-package co.cask.plugin.http;
+package io.cdap.plugin.http;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Macro;
-import co.cask.cdap.api.plugin.PluginConfig;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.plugin.PluginConfig;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 
@@ -68,7 +68,7 @@ public class HTTPConfig extends PluginConfig {
   private Integer numRetries;
 
   public HTTPConfig() {
-    method = co.cask.common.http.HttpMethod.GET.name();
+    method = io.cdap.common.http.HttpMethod.GET.name();
     numRetries = 0;
     followRedirects = true;
     connectTimeout = 60000;
@@ -91,11 +91,11 @@ public class HTTPConfig extends PluginConfig {
 
     if (!containsMacro("method")) {
       try {
-        co.cask.common.http.HttpMethod.valueOf(method.toUpperCase());
+        io.cdap.common.http.HttpMethod.valueOf(method.toUpperCase());
       } catch (IllegalArgumentException e) {
         throw new IllegalArgumentException(String.format("Invalid request method %s, must be one of %s.",
                                                          method,
-                                                         Joiner.on(',').join(co.cask.common.http.HttpMethod.values())));
+                                                         Joiner.on(',').join(io.cdap.common.http.HttpMethod.values())));
       }
     }
     if (!containsMacro("numRetries") && numRetries < 0) {

@@ -1,5 +1,5 @@
 /*
- * Copyright © 2016 Cask Data, Inc.
+ * Copyright © 2016-2019 Cask Data, Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -14,17 +14,17 @@
  * the License.
  */
 
-package co.cask.plugin;
+package io.cdap.plugin;
 
-import co.cask.cdap.api.annotation.Description;
-import co.cask.cdap.api.annotation.Name;
-import co.cask.cdap.api.annotation.Plugin;
-import co.cask.cdap.etl.api.action.Action;
-import co.cask.cdap.etl.api.action.ActionContext;
-import co.cask.plugin.http.HTTPArgumentSetter;
-import co.cask.plugin.http.HTTPConfig;
-import co.cask.plugin.proto.Argument;
-import co.cask.plugin.proto.Configuration;
+import io.cdap.cdap.api.annotation.Description;
+import io.cdap.cdap.api.annotation.Name;
+import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.cdap.etl.api.action.Action;
+import io.cdap.cdap.etl.api.action.ActionContext;
+import io.cdap.plugin.http.HTTPArgumentSetter;
+import io.cdap.plugin.http.HTTPConfig;
+import io.cdap.plugin.proto.Argument;
+import io.cdap.plugin.proto.Configuration;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import org.slf4j.Logger;
