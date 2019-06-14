@@ -2,16 +2,21 @@
   "metadata": {
     "spec-version": "1.5"
   },
-  "display-name": "HTTP Argument Setter",
+  "display-name": "Argument Setter",
   "configuration-groups": [
     {
-      "label": "Driver Argument Setter Configuration",
+      "label": "Basic",
       "properties": [
         {
           "widget-type": "textbox",
           "label": "URL",
           "name": "url"
-        },
+        }
+      ]
+    },
+    {
+      "label": "Advanced",
+      "properties": [
         {
           "widget-type": "select",
           "label": "HTTP Method",
@@ -36,22 +41,40 @@
         {
           "widget-type": "textbox",
           "label": "Connection Timeout (milliseconds)",
-          "name": "connectTimeoutMillis"
+          "name": "connectTimeout",
+          "widget-attributes": {
+            "default": "60000"
+          }
+        },
+        {
+          "widget-type": "textbox",
+          "label": "Read Timeout (milliseconds)",
+          "name": "readTimeout",
+          "widget-attributes": {
+            "default": "60000"
+          }
         },
         {
           "widget-type": "textbox",
           "label": "Number of Retries",
-          "name": "numRetries"
+          "name": "numRetries",
+          "widget-attributes": {
+            "default": "0"
+          }
         },
         {
-          "widget-type": "select",
-          "label": "Should Follow Redirects",
+          "widget-type": "toggle",
+          "label": "Follow Redirects",
           "name": "followRedirects",
-          "widget-attributes" : {
-            "values": [
-              "true",
-              "false"
-            ],
+          "widget-attributes": {
+            "on": {
+              "value": "true",
+              "label": "Yes"
+            },
+            "off": {
+              "value": "false",
+              "label": "No"
+            },
             "default": "true"
           }
         },
@@ -64,6 +87,9 @@
             "kv-delimiter" : ":",
             "delimiter" : ";"
           }
+        },
+        {
+
         }
       ]
     }
