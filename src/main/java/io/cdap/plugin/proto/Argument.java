@@ -43,6 +43,10 @@ public final class Argument {
   private String type;
   private JsonElement value;
 
+  public Argument() {
+    type = "string";
+  }
+
   public String getName() {
     return name;
   }
