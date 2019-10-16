@@ -21,6 +21,7 @@ import io.cdap.cdap.api.annotation.Macro;
 import io.cdap.cdap.api.plugin.PluginConfig;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
+import io.cdap.cdap.etl.api.FailureCollector;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -32,6 +33,11 @@ import javax.annotation.Nullable;
  * Common http plugin properties.
  */
 public class HTTPConfig extends PluginConfig {
+  private static final String URL = "url";
+  private static final String CONNECTION_TIMEOUT = "connectTimeout";
+  private static final String METHOD = "method";
+  private static final String NUM_RETRIES = "numRetries";
+  private static final String REQUEST_HEADERS = "requestHeaders";
 
   @Description("The URL to fetch data from.")
   @Macro
@@ -76,37 +82,44 @@ public class HTTPConfig extends PluginConfig {
   }
 
   @SuppressWarnings("ConstantConditions")
-  void validate() {
+  void validate(FailureCollector collector) {
     if (url != null) {
       try {
         new URL(url);
       } catch (MalformedURLException e) {
-        throw new IllegalArgumentException(String.format("URL '%s' is malformed: %s", url, e.getMessage()), e);
+        collector.addFailure(String.format("URL '%s' is malformed: %s", url, e.getMessage()), null)
+          .withConfigProperty(URL).withStacktrace(e.getStackTrace());
       }
     }
+
     if (connectTimeout < 0) {
-      throw new IllegalArgumentException(String.format(
-        "Invalid connectTimeout %d. Timeout must be 0 or a positive number.", connectTimeout));
+      collector.addFailure(
+        String.format("Invalid connectTimeout '%d'. Timeout must be 0 or a positive number.", connectTimeout), null)
+        .withConfigProperty(CONNECTION_TIMEOUT);
     }
 
-    if (!containsMacro("method")) {
+    if (!containsMacro(METHOD)) {
       try {
         io.cdap.common.http.HttpMethod.valueOf(method.toUpperCase());
       } catch (IllegalArgumentException e) {
-        throw new IllegalArgumentException(String.format("Invalid request method %s, must be one of %s.",
-                                                         method,
-                                                         Joiner.on(',').join(io.cdap.common.http.HttpMethod.values())));
+        collector.addFailure(
+          String.format("Invalid request method '%s'.", method),
+          String.format("Supported methods are: %s.", Joiner.on(',').join(io.cdap.common.http.HttpMethod.values())))
+          .withConfigProperty(METHOD);
       }
     }
-    if (!containsMacro("numRetries") && numRetries < 0) {
-      throw new IllegalArgumentException(String.format(
-        "Invalid numRetries %d. Retries cannot be a negative number.", numRetries));
+
+    if (!containsMacro(NUM_RETRIES) && numRetries < 0) {
+      collector.addFailure(String.format("Invalid numRetries %d. Retries cannot be a negative number.",
+                                         numRetries), null).withConfigProperty(NUM_RETRIES);
     }
 
-    getHeaders();
+    try {
+      getHeaders();
+    } catch (IllegalArgumentException e) {
+      collector.addFailure(e.getMessage(), null).withConfigProperty(REQUEST_HEADERS);
+    }
   }
-
-
 
   public String getUrl() {
     return url;
