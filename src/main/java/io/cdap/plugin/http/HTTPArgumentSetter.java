@@ -16,6 +16,7 @@
 
 package io.cdap.plugin.http;
 
+import io.cdap.cdap.etl.api.FailureCollector;
 import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.action.Action;
 import io.cdap.cdap.etl.api.action.ActionContext;
@@ -45,13 +46,15 @@ public abstract class HTTPArgumentSetter<T extends HTTPConfig> extends Action {
 
   @Override
   public void configurePipeline(PipelineConfigurer pipelineConfigurer) {
-    conf.validate();
+    FailureCollector collector = pipelineConfigurer.getStageConfigurer().getFailureCollector();
+    conf.validate(collector);
   }
-
 
   @Override
   public void run(ActionContext context) throws Exception {
-    conf.validate();
+    FailureCollector collector = context.getFailureCollector();
+    conf.validate(collector);
+    collector.getOrThrowException();
 
     HttpMethod method = HttpMethod.valueOf(conf.getMethod().toUpperCase());
     URL url = new URL(conf.getUrl());
