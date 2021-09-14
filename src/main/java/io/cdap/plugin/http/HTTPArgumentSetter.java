@@ -72,8 +72,8 @@ public abstract class HTTPArgumentSetter<T extends HTTPConfig> extends Action {
         int responseCode = response.getResponseCode();
 
         LOG.debug("Request to {} resulted in response code {}.", conf.getUrl(), responseCode);
-        if (responseCode / 100 != 2) {
-          throw new IllegalStateException(String.format("Received non-ok response code %d. Response message = %s",
+        if (responseCode != 200) {
+          throw new IllegalStateException(String.format("Received non-200 response code %d. Response message = %s",
                                                         responseCode, response.getResponseMessage()));
         }
         handleResponse(context, response.getResponseBodyAsString());
