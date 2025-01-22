@@ -19,6 +19,9 @@ package io.cdap.plugin;
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Name;
 import io.cdap.cdap.api.annotation.Plugin;
+import io.cdap.cdap.api.exception.ErrorCategory;
+import io.cdap.cdap.api.exception.ErrorType;
+import io.cdap.cdap.api.exception.ErrorUtils;
 import io.cdap.cdap.etl.api.action.Action;
 import io.cdap.cdap.etl.api.action.ActionContext;
 import io.cdap.plugin.http.HTTPArgumentSetter;
@@ -76,12 +79,15 @@ public final class ArgumentSetter extends HTTPArgumentSetter<HTTPConfig> {
         if (value != null) {
           context.getArguments().set(name, value);
         } else {
-          throw new RuntimeException("Configuration '" + name + "' is null. Cannot set argument to null.");
+          String errorReason = String.format("Configuration '%s' is null. Cannot set argument to null.", name);
+          throw ErrorUtils.getProgramFailureException(new ErrorCategory(ErrorCategory.ErrorCategoryEnum.PLUGIN),
+                  errorReason, errorReason, ErrorType.USER, false, null);
         }
       }
     } catch (JsonSyntaxException e) {
-      throw new RuntimeException(String.format("Could not parse response from '%s': %s",
-                                               conf.getUrl(), e.getMessage()));
+      String errorReason = String.format("Could not parse response from '%s': %s", conf.getUrl(), e.getMessage());
+      throw ErrorUtils.getProgramFailureException(new ErrorCategory(ErrorCategory.ErrorCategoryEnum.PLUGIN),
+              errorReason, errorReason, ErrorType.USER, false, e);
     }
   }
 }
