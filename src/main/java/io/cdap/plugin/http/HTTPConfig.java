@@ -18,6 +18,9 @@ package io.cdap.plugin.http;
 
 import io.cdap.cdap.api.annotation.Description;
 import io.cdap.cdap.api.annotation.Macro;
+import io.cdap.cdap.api.exception.ErrorCategory;
+import io.cdap.cdap.api.exception.ErrorType;
+import io.cdap.cdap.api.exception.ErrorUtils;
 import io.cdap.cdap.api.plugin.PluginConfig;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
@@ -163,7 +166,9 @@ public class HTTPConfig extends PluginConfig {
     try {
       return requestHeaders == null ? Collections.<String, String>emptyMap() : parseMap(requestHeaders);
     } catch (Exception e) {
-      throw new IllegalArgumentException("Could not parse headers: " + e.getMessage(), e);
+      String error = String.format("Could not parse headers: %s",e.getMessage());
+      throw ErrorUtils.getProgramFailureException(new ErrorCategory(ErrorCategory.ErrorCategoryEnum.PLUGIN),
+                                                  error, error, ErrorType.USER, false, e);
     }
   }
 
@@ -171,7 +176,9 @@ public class HTTPConfig extends PluginConfig {
     try {
       return Splitter.on(";").trimResults().withKeyValueSeparator(":").split(val);
     } catch (Exception e) {
-      throw new IllegalArgumentException("Could not parse headers: " + e.getMessage(), e);
+      String error = String.format("Could not parse headers: %s",e.getMessage());
+      throw ErrorUtils.getProgramFailureException(new ErrorCategory(ErrorCategory.ErrorCategoryEnum.PLUGIN),
+                                                  error, error, ErrorType.USER, false, e);
     }
   }
 }

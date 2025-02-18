@@ -16,6 +16,10 @@
 
 package io.cdap.plugin.http;
 
+import io.cdap.cdap.api.exception.ErrorCategory;
+import io.cdap.cdap.api.exception.ErrorCodeType;
+import io.cdap.cdap.api.exception.ErrorType;
+import io.cdap.cdap.api.exception.ErrorUtils;
 import io.cdap.cdap.etl.api.FailureCollector;
 import io.cdap.cdap.etl.api.PipelineConfigurer;
 import io.cdap.cdap.etl.api.action.Action;
@@ -70,11 +74,17 @@ public abstract class HTTPArgumentSetter<T extends HTTPConfig> extends Action {
       try {
         HttpResponse response = HttpRequests.execute(requestBuilder.build(), httpRequestConfig);
         int responseCode = response.getResponseCode();
-
         LOG.debug("Request to {} resulted in response code {}.", conf.getUrl(), responseCode);
         if (responseCode != 200) {
-          throw new IllegalStateException(String.format("Received non-200 response code %d. Response message = %s",
-                                                        responseCode, response.getResponseMessage()));
+          ErrorUtils.ActionErrorPair pair = ErrorUtils.getActionErrorByStatusCode(responseCode);
+          String errorReason = String.format("Received non-200 response code %d. %s", responseCode,
+                                             pair.getCorrectiveAction());
+          String errorMessage = String.format("Received non-200 response code %d. Response message = %s",
+                                              responseCode, response.getResponseMessage());
+          ErrorType errorType = pair.getErrorType();
+          throw ErrorUtils.getProgramFailureException(new ErrorCategory(ErrorCategory.ErrorCategoryEnum.PLUGIN),
+                                                      errorReason, errorMessage, errorType, true, ErrorCodeType.HTTP,
+                                                      String.valueOf(responseCode),null, null);
         }
         handleResponse(context, response.getResponseBodyAsString());
         return;
@@ -86,7 +96,10 @@ public abstract class HTTPArgumentSetter<T extends HTTPConfig> extends Action {
       }
     } while (retries < conf.getNumRetries());
 
-    throw exception;
+    String errorReason = String.format("Error making %s request to url %s : %s",
+            conf.getMethod(), conf.getUrl(), exception.getMessage());
+    throw ErrorUtils.getProgramFailureException(new ErrorCategory(ErrorCategory.ErrorCategoryEnum.PLUGIN),
+            errorReason, errorReason, ErrorType.USER, false, exception);
   }
 
   abstract protected void handleResponse(ActionContext context, String responseBody) throws Exception;
